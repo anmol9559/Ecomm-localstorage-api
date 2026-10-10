@@ -1,0 +1,44 @@
+import React from "react";
+import ProductCard from "../components/ProductCard";
+import ProductCardSkeleton from "../components/ProductCardSkeleton";
+import { useProduct } from "../hooks/productHooks";
+import Filters from "../components/Filters";
+
+const ShopPage = () => {
+  const {
+    filteredProducts,
+    setSearch,
+    setCategory,
+    isPending,
+    isError,
+    error,
+  } = useProduct();
+
+  return (
+    <div className="min-h-screen bg-black p-8">
+      <Filters setSearch={setSearch} setCategory={setCategory} />
+      {isError ? (
+        <p className="mt-8 text-center text-red-400" role="alert">
+          Could not load products: {error.message}
+        </p>
+      ) : null}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {isPending
+          ? Array.from({ length: 8 }).map((_, index) => (
+              <ProductCardSkeleton key={index} />
+            ))
+          : !isError && filteredProducts.length === 0 ? (
+            <p className="col-span-full mt-8 text-center text-zinc-400">
+              No products match your filters.
+            </p>
+          ) : (
+            filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))
+          )}
+      </div>
+    </div>
+  );
+};
+
+export default ShopPage;
